@@ -141,7 +141,7 @@ impl App {
     }
 
     fn save_step_to_file(&self) -> Result<(), Error> {
-        let mut fich = File::create(self.fich_name.clone())?;
+        let mut fich = File::create(format!("{}.tmp", self.fich_name.clone()))?;
 
         fich.write_all(
             self.step_vector
@@ -155,7 +155,10 @@ impl App {
         fich.write_all("\n".to_string().as_bytes())?;
         fich.write_all(self.step.to_string().as_bytes())?;
 
-        Ok(())
+        fs::rename(
+            format!("{}.tmp", self.fich_name.clone()),
+            self.fich_name.clone(),
+        )
     }
 
     fn save(&mut self) {
