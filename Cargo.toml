@@ -1,6 +1,6 @@
 [package]
 name = "zing-art"
-version = "0.1.3"
+version = "1.0.0"
 repository = "https://github.com/000volk000/zing"
 homepage = "https://github.com/000volk000/zing"
 description = " A TUI for physical string art placement. It takes a sequence, you pull the thread. ZING: Zing Is Not Generating."
