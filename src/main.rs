@@ -146,6 +146,12 @@ mod tests {
         assert_eq!(app.step, 1);
         app.handle_key_event(KeyCode::Backspace.into());
         assert_eq!(app.step, 0);
+        app.handle_key_event(KeyCode::Backspace.into());
+        assert_eq!(app.step, 0);
+
+        app.step = u16::MAX;
+        app.handle_key_event(KeyCode::Char(' ').into());
+        assert_eq!(app.step, u16::MAX);
 
         let mut app = App::default();
 
