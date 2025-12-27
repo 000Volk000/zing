@@ -131,8 +131,13 @@ impl Widget for &App {
         block.clone().render(area, buf);
 
         let inner_block_area = block.inner(area);
-        let vertical_layout = Layout::vertical([Constraint::Min(1), Constraint::Percentage(100)]);
-        let [current_step_area, step_area] = vertical_layout.areas(inner_block_area);
+        let vertical_layout = Layout::vertical([
+            Constraint::Min(1),
+            Constraint::Fill(1),
+            Constraint::Min(1),
+            Constraint::Fill(1),
+        ]);
+        let [current_step_area, _, step_area, _] = vertical_layout.areas(inner_block_area);
 
         let current_step = Text::from(vec![Line::from(vec![
             "Step: ".into(),
