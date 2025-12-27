@@ -145,7 +145,6 @@ impl App {
 
         fich.write_all(
             self.step_vector
-                .clone()
                 .iter()
                 .map(|n| n.to_string())
                 .collect::<Vec<String>>()
