@@ -1,10 +1,10 @@
 [package]
 name = "zing"
 version = "0.1.0"
-description = " A TUI for physical string art placement. It takes a sequence, you pull the thread. ZING: Zing Is Not Generating. "
+description = " A TUI for physical string art placement. It takes a sequence, you pull the thread. ZING: Zing Is Not Generating."
 authors = ["Darío Martínez Kostyuk <dariomartk@gmail.com>"]
 license = "MIT"
-edition = "2024"
+edition = "2025"
 
 [dependencies]
 color-eyre = "0.6.3"
