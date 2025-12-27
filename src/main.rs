@@ -4,7 +4,7 @@ use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
     DefaultTerminal, Frame,
     buffer::Buffer,
-    layout::Rect,
+    layout::{Constraint, Layout, Rect},
     style::Stylize,
     symbols::border,
     text::{Line, Text},
@@ -36,13 +36,14 @@ impl App {
     pub fn new(fich_name: String) -> Self {
         let fich: Vec<String> = fs::read_to_string(fich_name)
             .expect("Couldn't find the file")
+            .trim()
             .lines()
             .map(|line| line.to_string())
             .collect();
         Self {
             exit: false,
             step_vector: fich
-                .get(0)
+                .first()
                 .expect("No first line on the file")
                 .split(",")
                 .map(|n| {
@@ -56,7 +57,7 @@ impl App {
                 .map(|s| s.as_str())
                 .unwrap_or("0")
                 .parse::<u16>()
-                .unwrap_or(0),
+                .expect("Something wrong setting the last checkpoint"),
         }
     }
 
@@ -102,7 +103,9 @@ impl App {
     }
 
     fn increment_step(&mut self) {
-        self.step = self.step.saturating_add(1);
+        if self.step < (self.step_vector.len() - 1) as u16 {
+            self.step = self.step.saturating_add(1);
+        }
     }
 
     fn decrement_step(&mut self) {
@@ -125,16 +128,32 @@ impl Widget for &App {
             .title(title.centered())
             .title_bottom(instructions.centered())
             .border_set(border::ROUNDED);
+        block.clone().render(area, buf);
 
-        let counter_text = Text::from(vec![Line::from(vec![
+        let inner_block_area = block.inner(area);
+        let vertical_layout = Layout::vertical([Constraint::Min(1), Constraint::Percentage(100)]);
+        let [current_step_area, step_area] = vertical_layout.areas(inner_block_area);
+
+        let current_step = Text::from(vec![Line::from(vec![
             "Step: ".into(),
             self.step.to_string().yellow(),
         ])]);
 
-        Paragraph::new(counter_text)
+        Paragraph::new(current_step)
             .centered()
-            .block(block)
-            .render(area, buf);
+            .render(current_step_area, buf);
+
+        let step = Text::from(vec![Line::from(vec![
+            self.step_vector
+                .get(self.step as usize)
+                .expect("Critical error getting the step")
+                .to_string()
+                .white(),
+        ])]);
+
+        Line::from(step.to_string())
+            .centered()
+            .render(step_area, buf);
     }
 }
 
