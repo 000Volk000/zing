@@ -1,8 +1,7 @@
 use std::{
     env,
     fs::{self, File},
-    io,
-    io::Write,
+    io::{self, Error, Write},
 };
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
@@ -23,6 +22,7 @@ pub struct App {
     step: u16,
     step_vector: Vec<u16>,
     fich_name: String,
+    failed_save_flag: bool,
     exit: bool,
 }
 
@@ -50,6 +50,7 @@ impl App {
             .collect();
         Self {
             exit: false,
+            failed_save_flag: false,
             step_vector: fich
                 .first()
                 .expect("No first line on the file")
@@ -108,8 +109,16 @@ impl App {
     }
 
     fn exit(&mut self) {
-        self.save_step_to_file();
-        self.exit = true;
+        if self.failed_save_flag {
+            self.exit = true;
+        } else {
+            match self.save_step_to_file() {
+                Ok(_) => self.exit = true,
+                _ => {
+                    self.failed_save_flag = true;
+                }
+            }
+        }
     }
 
     fn increment_step(&mut self) {
@@ -122,8 +131,8 @@ impl App {
         self.step = self.step.saturating_sub(1);
     }
 
-    fn save_step_to_file(&self) {
-        let mut fich = File::create(self.fich_name.clone()).expect("Unable to open the file");
+    fn save_step_to_file(&self) -> Result<(), Error> {
+        let mut fich = File::create(self.fich_name.clone())?;
 
         fich.write_all(
             self.step_vector
@@ -133,14 +142,11 @@ impl App {
                 .collect::<Vec<String>>()
                 .join(",")
                 .as_bytes(),
-        )
-        .expect("Unable to write data");
+        )?;
+        fich.write_all("\n".to_string().as_bytes())?;
+        fich.write_all(self.step.to_string().as_bytes())?;
 
-        fich.write_all("\n".to_string().as_bytes())
-            .expect("Unable to write data");
-
-        fich.write_all(self.step.to_string().as_bytes())
-            .expect("Unable to write data");
+        Ok(())
     }
 }
 
@@ -162,8 +168,13 @@ impl Widget for &App {
         block.clone().render(area, buf);
 
         let inner_block_area = block.inner(area);
-        let vertical_layout = Layout::vertical([Constraint::Min(1), Constraint::Percentage(100)]);
-        let [current_step_area, step_area] = vertical_layout.areas(inner_block_area);
+        let vertical_layout = Layout::vertical([
+            Constraint::Min(1),
+            Constraint::Percentage(100),
+            Constraint::Min(3),
+        ]);
+        let [current_step_area, step_area, lower_notification_area] =
+            vertical_layout.areas(inner_block_area);
 
         let current_step = Text::from(vec![Line::from(vec![
             "Step: ".into(),
@@ -231,5 +242,20 @@ impl Widget for &App {
             ])
             .build();
         next_text.render(next_step_area, buf);
+
+        if self.failed_save_flag {
+            let failed_save_notification = Text::from(vec![
+                Line::from("Something wrong happened saving the current position".bold()),
+                Line::from(vec![
+                    "Press ".bold(),
+                    "<Q>".red().bold(),
+                    " to quit without saving".bold(),
+                ]),
+            ]);
+
+            Paragraph::new(failed_save_notification)
+                .centered()
+                .render(lower_notification_area, buf);
+        }
     }
 }
