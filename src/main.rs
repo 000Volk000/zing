@@ -1,4 +1,9 @@
-use std::{env, fs, io};
+use std::{
+    env,
+    fs::{self, File},
+    io,
+    io::Write,
+};
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
@@ -17,6 +22,7 @@ use tui_big_text::{BigText, PixelSize};
 pub struct App {
     step: u16,
     step_vector: Vec<u16>,
+    fich_name: String,
     exit: bool,
 }
 
@@ -36,7 +42,7 @@ fn main() -> io::Result<()> {
 
 impl App {
     pub fn new(fich_name: String) -> Self {
-        let fich: Vec<String> = fs::read_to_string(fich_name)
+        let fich: Vec<String> = fs::read_to_string(fich_name.clone())
             .expect("Couldn't find the file")
             .trim()
             .lines()
@@ -60,6 +66,7 @@ impl App {
                 .unwrap_or("0")
                 .parse::<u16>()
                 .expect("Something wrong setting the last checkpoint"),
+            fich_name,
         }
     }
 
@@ -101,6 +108,7 @@ impl App {
     }
 
     fn exit(&mut self) {
+        self.save_step_to_file();
         self.exit = true;
     }
 
@@ -112,6 +120,27 @@ impl App {
 
     fn decrement_step(&mut self) {
         self.step = self.step.saturating_sub(1);
+    }
+
+    fn save_step_to_file(&self) {
+        let mut fich = File::create(self.fich_name.clone()).expect("Unable to open the file");
+
+        fich.write_all(
+            self.step_vector
+                .clone()
+                .iter()
+                .map(|n| n.to_string())
+                .collect::<Vec<String>>()
+                .join(",")
+                .as_bytes(),
+        )
+        .expect("Unable to write data");
+
+        fich.write_all("\n".to_string().as_bytes())
+            .expect("Unable to write data");
+
+        fich.write_all(self.step.to_string().as_bytes())
+            .expect("Unable to write data");
     }
 }
 
