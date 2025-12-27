@@ -23,6 +23,7 @@ pub struct App {
     step_vector: Vec<u16>,
     fich_name: String,
     failed_save_flag: bool,
+    saved_flag: bool,
     exit: bool,
 }
 
@@ -51,6 +52,7 @@ impl App {
         Self {
             exit: false,
             failed_save_flag: false,
+            saved_flag: false,
             step_vector: fich
                 .first()
                 .expect("No first line on the file")
@@ -97,14 +99,21 @@ impl App {
     }
 
     fn handle_key_event(&mut self, key_event: KeyEvent) {
+        self.saved_flag = false;
         match key_event.code {
             KeyCode::Esc => self.exit(),
             KeyCode::Char('q') => self.exit(),
-            KeyCode::Backspace => self.decrement_step(),
-            KeyCode::Left => self.decrement_step(),
-            KeyCode::Char(' ') => self.increment_step(),
-            KeyCode::Right => self.increment_step(),
-            _ => {}
+            pressed_key => {
+                self.failed_save_flag = false;
+                match pressed_key {
+                    KeyCode::Backspace => self.decrement_step(),
+                    KeyCode::Left => self.decrement_step(),
+                    KeyCode::Char(' ') => self.increment_step(),
+                    KeyCode::Right => self.increment_step(),
+                    KeyCode::Char('s') => self.save(),
+                    _ => {}
+                }
+            }
         }
     }
 
@@ -148,6 +157,13 @@ impl App {
 
         Ok(())
     }
+
+    fn save(&mut self) {
+        match self.save_step_to_file() {
+            Ok(_) => self.saved_flag = true,
+            _ => self.failed_save_flag = true,
+        }
+    }
 }
 
 impl Widget for &App {
@@ -158,6 +174,8 @@ impl Widget for &App {
             "<Left> / <Backspace>".blue().bold(),
             " | Next step ".into(),
             "<Right> / <Space>".blue().bold(),
+            " | Save ".into(),
+            "<S>".blue().bold(),
             " | Quit ".into(),
             "<Q> / <Esc> ".blue().bold(),
         ]);
@@ -252,6 +270,14 @@ impl Widget for &App {
                     " to quit without saving".bold(),
                 ]),
             ]);
+
+            Paragraph::new(failed_save_notification)
+                .centered()
+                .render(lower_notification_area, buf);
+        }
+
+        if self.saved_flag {
+            let failed_save_notification = Text::from(vec![Line::from("Saved!".bold())]);
 
             Paragraph::new(failed_save_notification)
                 .centered()
