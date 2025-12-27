@@ -13,7 +13,7 @@ use ratatui::{
 
 #[derive(Debug, Default)]
 pub struct App {
-    step: u8,
+    step: u16,
     exit: bool,
 }
 
@@ -67,11 +67,11 @@ impl App {
     }
 
     fn increment_step(&mut self) {
-        self.step += 1;
+        self.step = self.step.saturating_add(1);
     }
 
     fn decrement_step(&mut self) {
-        self.step -= 1;
+        self.step = self.step.saturating_sub(1);
     }
 }
 
