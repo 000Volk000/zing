@@ -1,4 +1,4 @@
-use std::io;
+use std::{env, fs, io};
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
@@ -14,17 +14,52 @@ use ratatui::{
 #[derive(Debug, Default)]
 pub struct App {
     step: u16,
+    step_vector: Vec<u16>,
     exit: bool,
 }
 
 fn main() -> io::Result<()> {
+    let args: Vec<String> = env::args().collect();
+
     let mut terminal = ratatui::init();
-    let app_result = App::default().run(&mut terminal);
+    let app_result = App::new(
+        args.get(1)
+            .expect("Please put the file route on the first argument\nEx: ./zing pattern.txt")
+            .to_string(),
+    )
+    .run(&mut terminal);
     ratatui::restore();
     app_result
 }
 
 impl App {
+    pub fn new(fich_name: String) -> Self {
+        let fich: Vec<String> = fs::read_to_string(fich_name)
+            .expect("Couldn't find the file")
+            .lines()
+            .map(|line| line.to_string())
+            .collect();
+        Self {
+            exit: false,
+            step_vector: fich
+                .get(0)
+                .expect("No first line on the file")
+                .split(",")
+                .map(|n| {
+                    n.trim()
+                        .parse::<u16>()
+                        .expect("Bad format on file step sequence")
+                })
+                .collect(),
+            step: fich
+                .get(1)
+                .map(|s| s.as_str())
+                .unwrap_or("0")
+                .parse::<u16>()
+                .unwrap_or(0),
+        }
+    }
+
     /// runs the application's main loop until the user quits
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
