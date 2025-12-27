@@ -25,15 +25,49 @@ It also previews the previous and next steps so you can maintain flow.
 
 ## Installation
 
-You need [Rust](https://rust-lang.org/) and [Cargo](https://doc.rust-lang.org/cargo/) installed.
+You can install Zing using pre-built binaries or compile it from source.
 
-To install Zing globally on your system, run this inside the project folder:
+### Automated Install (Recommended)
+
+#### Linux & macOS
+
+Run the following in your terminal to download and install the latest release
 
 ```bash
-cargo install --path .
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/000Volk000/zing/releases/latest/download/zing-art-installer.sh | sh
 ```
 
-Now the command zing is available from any directory in your terminal.
+#### Windows
+
+Run this in PowerShell
+
+```PowerShell
+irm https://github.com/000Volk000/zing/releases/latest/download/zing-art-installer.ps1 | iex
+```
+
+### Package Managers
+
+#### Homebrew
+
+```bash
+brew install 000Volk000/zing/zing-art
+```
+
+### From Source
+
+If you have [Rust](https://rust-lang.org/) installed, you can get it directly from [crates.io](https://crates.io/):
+
+```bash
+cargo install zing-art
+```
+
+Or build it from the repository:
+
+```bash
+git clone https://github.com/000Volk000/zing.git
+cd zing
+cargo install --path .
+```
 
 ## Usage
 
@@ -42,7 +76,7 @@ Feed it a sequence.
 You can feed it any plain text file. The extension does not matter, but the structure does.
 
 ```bash
-zing pattern.txt
+zing-art pattern.txt
 ```
 
 ### Important Data Rules
