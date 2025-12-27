@@ -13,7 +13,7 @@ The name comes from two places:
 
 It does not calculate algorithms. It does not turn photographs into nail patterns. It simply holds the map while you drive.
 
-![String Art Context](assets/example.png)
+<img src="assets/example.png" alt="String Art Example" width="400">
 
 ## Why use it?
 
@@ -60,7 +60,7 @@ zing pattern.txt
 
 - `SPACE` / `RIGHT` : Next step.
 - `BACKSPACE` / `LEFT` : Go back.
-- `S` : Save current position.
+- `s` : Save current position.
 - `q` / `ESCAPE` : Quit.
 
 > [!IMPORTANT]
