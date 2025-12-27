@@ -4,12 +4,14 @@ use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
     DefaultTerminal, Frame,
     buffer::Buffer,
-    layout::{Constraint, Layout, Rect},
+    layout::{Constraint, Flex, Layout, Rect},
+    prelude::Style,
     style::Stylize,
     symbols::border,
     text::{Line, Text},
     widgets::{Block, Paragraph, Widget},
 };
+use tui_big_text::{BigText, PixelSize};
 
 #[derive(Debug, Default)]
 pub struct App {
@@ -131,13 +133,8 @@ impl Widget for &App {
         block.clone().render(area, buf);
 
         let inner_block_area = block.inner(area);
-        let vertical_layout = Layout::vertical([
-            Constraint::Min(1),
-            Constraint::Fill(1),
-            Constraint::Min(1),
-            Constraint::Fill(1),
-        ]);
-        let [current_step_area, _, step_area, _] = vertical_layout.areas(inner_block_area);
+        let vertical_layout = Layout::vertical([Constraint::Min(1), Constraint::Percentage(100)]);
+        let [current_step_area, step_area] = vertical_layout.areas(inner_block_area);
 
         let current_step = Text::from(vec![Line::from(vec![
             "Step: ".into(),
@@ -148,17 +145,23 @@ impl Widget for &App {
             .centered()
             .render(current_step_area, buf);
 
-        let step = Text::from(vec![Line::from(vec![
-            self.step_vector
-                .get(self.step as usize)
-                .expect("Critical error getting the step")
-                .to_string()
-                .white(),
-        ])]);
-
-        Line::from(step.to_string())
+        let [centered_step_area] = Layout::vertical([Constraint::Length(8)])
+            .flex(Flex::Center)
+            .areas(step_area);
+        let step = BigText::builder()
             .centered()
-            .render(step_area, buf);
+            .pixel_size(PixelSize::Full)
+            .style(Style::new().white())
+            .lines(vec![
+                self.step_vector
+                    .get(self.step as usize)
+                    .expect("Critical error getting the step")
+                    .to_string()
+                    .into(),
+            ])
+            .build();
+
+        step.render(centered_step_area, buf);
     }
 }
 
