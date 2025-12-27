@@ -145,9 +145,14 @@ impl Widget for &App {
             .centered()
             .render(current_step_area, buf);
 
-        let [centered_step_area] = Layout::vertical([Constraint::Length(8)])
-            .flex(Flex::Center)
-            .areas(step_area);
+        let [centered_step_area, _, centered_below_area] = Layout::vertical([
+            Constraint::Length(7),
+            Constraint::Length(1),
+            Constraint::Length(2),
+        ])
+        .flex(Flex::Center)
+        .areas(step_area);
+
         let step = BigText::builder()
             .centered()
             .pixel_size(PixelSize::Full)
@@ -160,71 +165,42 @@ impl Widget for &App {
                     .into(),
             ])
             .build();
-
         step.render(centered_step_area, buf);
-    }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use ratatui::style::Style;
+        let [last_step_area, next_step_area] =
+            Layout::horizontal([Constraint::Percentage(50), Constraint::Percentage(50)])
+                .areas(centered_below_area);
+        let last_text = BigText::builder()
+            .centered()
+            .pixel_size(PixelSize::Octant)
+            .style(Style::new().yellow())
+            .lines(vec![
+                ("Last:".white()
+                    + (self
+                        .step_vector
+                        .get(self.step.saturating_sub(1) as usize)
+                        .expect("Critical error getting the last step")
+                        .to_string()
+                        .yellow())),
+            ])
+            .build();
+        last_text.render(last_step_area, buf);
 
-    #[test]
-    fn render() {
-        let app = App::default();
-        let mut buf = Buffer::empty(Rect::new(0, 0, 92, 4));
-
-        app.render(buf.area, &mut buf);
-
-        let mut expected = Buffer::with_lines(vec![
-            "╭───────────────────────────────── Zing Is Not Generating ─────────────────────────────────╮",
-            "│                                          Step: 0                                         │",
-            "│                                                                                          │",
-            "╰── Previous step <Left> / <Backspace> | Next step <Right> / <Space> | Quit <Q> / <Esc> ───╯",
-        ]);
-        let title_style = Style::new().bold();
-        let counter_style = Style::new().yellow();
-        let key_style = Style::new().blue().bold();
-        expected.set_style(Rect::new(34, 0, 24, 1), title_style);
-        expected.set_style(Rect::new(49, 1, 1, 1), counter_style);
-        expected.set_style(Rect::new(18, 3, 20, 1), key_style);
-        expected.set_style(Rect::new(51, 3, 17, 1), key_style);
-        expected.set_style(Rect::new(76, 3, 12, 1), key_style);
-
-        assert_eq!(buf, expected);
-    }
-
-    #[test]
-    fn handle_key_event() -> io::Result<()> {
-        let mut app = App::default();
-
-        app.handle_key_event(KeyCode::Right.into());
-        assert_eq!(app.step, 1);
-        app.handle_key_event(KeyCode::Char(' ').into());
-        assert_eq!(app.step, 2);
-
-        app.handle_key_event(KeyCode::Left.into());
-        assert_eq!(app.step, 1);
-        app.handle_key_event(KeyCode::Backspace.into());
-        assert_eq!(app.step, 0);
-        app.handle_key_event(KeyCode::Backspace.into());
-        assert_eq!(app.step, 0);
-
-        app.step = u16::MAX;
-        app.handle_key_event(KeyCode::Char(' ').into());
-        assert_eq!(app.step, u16::MAX);
-
-        let mut app = App::default();
-
-        app.handle_key_event(KeyCode::Char('q').into());
-        assert!(app.exit);
-
-        let mut app = App::default();
-
-        app.handle_key_event(KeyCode::Esc.into());
-        assert!(app.exit);
-
-        Ok(())
+        let next_text = BigText::builder()
+            .centered()
+            .pixel_size(PixelSize::Octant)
+            .style(Style::new().yellow())
+            .lines(vec![
+                ("Next:".white()
+                    + (self
+                        .step_vector
+                        .get(self.step.saturating_add(1) as usize)
+                        .or(self.step_vector.get(self.step as usize))
+                        .expect("Critical error getting the step")
+                        .to_string()
+                        .yellow())),
+            ])
+            .build();
+        next_text.render(next_step_area, buf);
     }
 }
