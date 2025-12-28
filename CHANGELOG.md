@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.1.0] - 2025-12-28
+
+### 🚀 Features
+
+- Changed colors to be more responsive, and the binary file name
 ## [1.0.1] - 2025-12-27
 
 ### 🐛 Bug Fixes
