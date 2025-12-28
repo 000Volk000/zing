@@ -198,7 +198,7 @@ impl Widget for &App {
 
         let current_step = Text::from(vec![Line::from(vec![
             "Step: ".into(),
-            self.step.to_string().yellow(),
+            self.step.to_string().blue(),
         ])]);
 
         Paragraph::new(current_step)
@@ -241,7 +241,7 @@ impl Widget for &App {
                         .get(self.step.saturating_sub(1) as usize)
                         .expect("Critical error getting the last step")
                         .to_string()
-                        .yellow())),
+                        .blue())),
             ])
             .build();
         last_text.render(last_step_area, buf);
@@ -258,7 +258,7 @@ impl Widget for &App {
                         .or(self.step_vector.get(self.step as usize))
                         .expect("Critical error getting the step")
                         .to_string()
-                        .yellow())),
+                        .blue())),
             ])
             .build();
         next_text.render(next_step_area, buf);
@@ -279,7 +279,7 @@ impl Widget for &App {
         }
 
         if self.saved_flag {
-            let failed_save_notification = Text::from(vec![Line::from("Saved!".bold())]);
+            let failed_save_notification = Text::from(vec![Line::from("Saved!".red().bold())]);
 
             Paragraph::new(failed_save_notification)
                 .centered()

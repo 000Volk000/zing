@@ -76,7 +76,7 @@ Feed it a sequence.
 You can feed it any plain text file. The extension does not matter, but the structure does.
 
 ```bash
-zing-art pattern.txt
+zing pattern.txt
 ```
 
 ### Important Data Rules
