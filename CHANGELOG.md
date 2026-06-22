@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.1.1] - 2026-06-22
+
+### 💼 Other
+
+- *(deps)* Bump ratatui from 0.30.1 to 0.30.2 ([#28](https://github.com/000Volk000/zing/issues/28))
+- *(deps)* Bump tui-big-text from 0.8.7 to 0.8.8 ([#27](https://github.com/000Volk000/zing/issues/27))
+- *(deps)* Bump actions/checkout from 6 to 7 ([#26](https://github.com/000Volk000/zing/issues/26))
+- *(deps)* Bump tui-big-text from 0.8.5 to 0.8.7 ([#25](https://github.com/000Volk000/zing/issues/25))
+- *(deps)* Bump tui-big-text from 0.8.4 to 0.8.5 ([#24](https://github.com/000Volk000/zing/issues/24))
+- *(deps)* Bump ratatui from 0.30.0 to 0.30.1 ([#23](https://github.com/000Volk000/zing/issues/23))
+- *(deps)* Bump tui-big-text from 0.8.3 to 0.8.4 ([#21](https://github.com/000Volk000/zing/issues/21))
+- *(deps)* Bump tui-big-text from 0.8.2 to 0.8.3 ([#20](https://github.com/000Volk000/zing/issues/20))
+- *(deps)* Bump actions/download-artifact from 7 to 8 ([#17](https://github.com/000Volk000/zing/issues/17))
+- *(deps)* Bump actions/upload-artifact from 6 to 7 ([#18](https://github.com/000Volk000/zing/issues/18))
+- *(deps)* Bump tui-big-text from 0.8.1 to 0.8.2 ([#16](https://github.com/000Volk000/zing/issues/16))
+- *(deps)* Bump actions/checkout from 4 to 6 ([#14](https://github.com/000Volk000/zing/issues/14))
+- *(deps)* Bump actions/upload-artifact from 4 to 6 ([#13](https://github.com/000Volk000/zing/issues/13))
+- *(deps)* Bump actions/download-artifact from 4 to 7 ([#12](https://github.com/000Volk000/zing/issues/12))
 ## [1.1.0] - 2025-12-28
 
 ### 🚀 Features
